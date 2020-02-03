@@ -1,14 +1,19 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
+
+struct IPAddressInfo
+{
+	int a, b, c, d; 
+	std::string macAddress;
+};
 
 class Monitor
 {
 public:
-	Monitor();
-	~Monitor();
-
 	Monitor(int delay);
+	~Monitor();
 
 	void SetDelay(int delay);
 
@@ -16,5 +21,9 @@ public:
 
 private:
 	int m_Delay;
+
+
+
+	std::vector<std::vector<IPAddressInfo>> IPAddressArray;
 };
 

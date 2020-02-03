@@ -25,8 +25,6 @@ std::string GetCommandOutput(const char* cmd)
 	while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
 	{
 		result += buffer.data();
-
-		std::cout << buffer.data() << std::endl;
 	}
 
 	return result;
