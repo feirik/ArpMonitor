@@ -15,7 +15,6 @@ int main(int argc, char* argv[])
 	std::cout << "Start!" << std::endl;
 
 	int delay = 0;
-	std::istringstream ss(argv[1]);
 
 	if (argc == 2 && math::IsInteger(argv[1]) == 1)
 	{

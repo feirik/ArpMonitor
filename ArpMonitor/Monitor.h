@@ -6,7 +6,8 @@
 struct IPAddressInfo
 {
 	int a, b, c, d; 
-	std::string macAddress;
+	std::string MACAddress;
+	bool dynamic;
 };
 
 class Monitor
@@ -19,11 +20,16 @@ public:
 
 	int GetDelay();
 
+	int GetOctetIt();
+	void IncrementOctetIt();
+
+	int GetIPOctetAsInt(const char& it0, const char& it1, const char& it2);
+
 private:
 	int m_Delay;
 
+	short m_OctetIt = 0;
 
-
-	std::vector<std::vector<IPAddressInfo>> IPAddressArray;
+	std::vector<IPAddressInfo> IPAddressArray;
 };
 
