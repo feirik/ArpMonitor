@@ -5,6 +5,10 @@
 #include <string>
 #include <cctype>
 
+#define MAC_LENGTH 17
+#define STATIC_WORDLEN 6
+#define DYNAMIC_WORDLEN 7
+
 Monitor::Monitor(int delay)
 	: m_Delay(delay)
 {
@@ -23,91 +27,83 @@ Monitor::Monitor(int delay)
 
 	//std::cout << "OUTPUT: " << ArpOutput[81] << std::endl;
 
+	// Iterate over whole output
 	for (auto it = ArpOutput.begin() + IPPos ; it != ArpOutput.end(); ++it) 
 	{
-		int i = 0;
+		int IPAddressRow = 0;
 
-		// Find start of IP address
+		// Find start of IP address (192.168.86.1)
 		if (!isspace(*it))
 		{
 			IPAddressArray.emplace_back();
 
-			int octet = GetIPOctetAsInt(*it, *(it + 1), *(it + 2));
-
-			//FOR LOOP WITH 4 LOOPS ISTEDENFOR OCTET ITERATOR??????
-			switch (GetOctetIt())
+			for (int i = 0; i < 4; ++i)
 			{
-				case 0: IPAddressArray.at(i).a = octet; break;
-				case 1: IPAddressArray.at(i).b = octet; break;
-				case 2: IPAddressArray.at(i).c = octet; break;
-				case 3: IPAddressArray.at(i).b = octet; break;
-			default:
-				break;
+				int octet = GetIPOctetAsInt(*it, *(it + 1), *(it + 2));
+
+				if (i < 3)
+				{
+					switch (i)
+					{
+						case 0: IPAddressArray.at(IPAddressRow).a = octet; break;
+						case 1: IPAddressArray.at(IPAddressRow).b = octet; break;
+						case 2: IPAddressArray.at(IPAddressRow).c = octet; break;
+					default:
+						break;
+					}
+					
+					it += GetNumberOfOctetDigits(octet) + 1;
+				}
+				if (i == 3)
+				{
+					IPAddressArray.at(IPAddressRow).d = octet;
+					it += GetNumberOfOctetDigits(octet);
+				}
 			}
 
-
-
-			std::cout << "OCTET TEST:" << IPAddressArray.at(i).a << std::endl;
-
-			break;
-
-			//Enumeration to check if octet is to be saved in a, b, c or d of vector?
-
-
-			/*IPAddressArray.emplace_back();
-
-			// Check if first part of IP address consists of 3 digits
-			if (isdigit(*it) && isdigit(*(it + 1)) && isdigit(*(it + 2)))
+			// Find start of MAC address
+			while (isspace(*it))
 			{
-				// Converting chars into int
-				int result = (*it - '0')*100 + (*(it + 1) - '0')*10 + (*(it + 2) - '0');
-
-				std::cout << "CALC: " << result << std::endl;
-
-				IPAddressArray.at(0).a = result;
-
-				std::cout << "ARRAY: " << IPAddressArray.at(0).a << std::endl;
-
-
-				it += 4;
+				++it;
 			}
-			// 2 digit check
-			else if (isdigit(*it) && isdigit(*(it + 1)))
+			
+			size_t itPos = it - ArpOutput.begin();
+
+			// Store MAC address sub-string
+			IPAddressArray.at(IPAddressRow).MACAddress = ArpOutput.substr(itPos, MAC_LENGTH);
+
+			it += MAC_LENGTH;
+
+			// Find start of dynamic/static description
+			while (isspace(*it))
 			{
-				// Converting chars into int
-				int result = (*it - '0') * 10 + (*(it + 1) - '0');
-
-				std::cout << "CALC: " << result << std::endl;
-
-				IPAddressArray.at(0).a = result;
-
-				std::cout << "ARRAY: " << IPAddressArray.at(0).a << std::endl;
-
-
-				it += 3;
+				++it;
 			}
-			// 1 digit check
-			else if (isdigit(*it))
+
+			if (*it == 'd')
 			{
-				// Converting chars into int
-				int result = (*it - '0');
+				IPAddressArray.at(IPAddressRow).dynamic = true;
+				it += DYNAMIC_WORDLEN;
+			}
+			else if(*it == 's')
+			{
+				IPAddressArray.at(IPAddressRow).dynamic = false;
+				it += STATIC_WORDLEN;
+			}
 
-				std::cout << "CALC: " << result << std::endl;
+			// Copy mac address
 
-				IPAddressArray.at(0).a = result;
+			std::cout << "OCTET A TEST: " << IPAddressArray.at(IPAddressRow).a << " At row: " << IPAddressRow << std::endl;
+			std::cout << "OCTET B TEST: " << IPAddressArray.at(IPAddressRow).b << " At row: " << IPAddressRow << std::endl;
+			std::cout << "OCTET C TEST: " << IPAddressArray.at(IPAddressRow).c << " At row: " << IPAddressRow << std::endl;
+			std::cout << "OCTET D TEST: " << IPAddressArray.at(IPAddressRow).d << " At row: " << IPAddressRow << std::endl;
+			std::cout << "MAC TEST: " << IPAddressArray.at(IPAddressRow).MACAddress << " At row: " << IPAddressRow << std::endl;
 
-				std::cout << "ARRAY: " << IPAddressArray.at(0).a << std::endl;
+			std::cout << "Iterator at: " << *it << std::endl;
 
-
-				it += 2;
-			}*/
-
-			std::cout << *it << std::endl;
-			std::cout << *(it+1) << std::endl;
-			break;
 		}
 
-		//std::cout << *it;
+		++IPAddressRow;
 	}
 
 	// Iterator til end of string, lete etter 3 digits, så 2 digits, så 1 digit, store i a,b,c,d. Finne MAC address først non-blank etter int d.
@@ -137,7 +133,7 @@ int Monitor::GetIPOctetAsInt(const char& it0, const char& it1, const char& it2)
 {
 	if (isdigit(it0) && isdigit(it1) && isdigit(it2))
 	{
-		// Converting chars into int
+		// Converting 3 chars into int
 		int result = (it0 - '0') * 100 + (it1 - '0') * 10 + (it2 - '0');
 
 		return result;
@@ -145,7 +141,7 @@ int Monitor::GetIPOctetAsInt(const char& it0, const char& it1, const char& it2)
 	// 2 digit check
 	else if (isdigit(it0) && isdigit(it1))
 	{
-		// Converting chars into int
+		// Converting 2 chars into int
 		int result = (it0 - '0') * 10 + (it1 - '0');
 
 		return result;
@@ -153,7 +149,7 @@ int Monitor::GetIPOctetAsInt(const char& it0, const char& it1, const char& it2)
 	// 1 digit check
 	else if (isdigit(it0))
 	{
-		// Converting chars into int
+		// Converting char into int
 		int result = (it0 - '0');
 
 		return result;
@@ -162,17 +158,18 @@ int Monitor::GetIPOctetAsInt(const char& it0, const char& it1, const char& it2)
 	return 0;
 }
 
-void Monitor::IncrementOctetIt()
+int Monitor::GetNumberOfOctetDigits(int octet)
 {
-	++m_OctetIt;
-
-	if (m_OctetIt > 3)
+	if (octet > 99)
 	{
-		m_OctetIt = 0;
+		return 3;
 	}
-}
-
-int Monitor::GetOctetIt()
-{
-	return m_OctetIt;
+	else if (octet > 9)
+	{
+		return 2;
+	}
+	else
+	{
+		return 1;
+	}
 }
