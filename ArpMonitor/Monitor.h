@@ -8,6 +8,8 @@ struct IPAddressInfo
 	int a, b, c, d; 
 	std::string MACAddress;
 	bool dynamic;
+
+	bool newEntry, elapsedEntry;
 };
 
 class Monitor
@@ -24,9 +26,14 @@ public:
 
 	int GetNumberOfOctetDigits(int octet);
 
+	void PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const std::string& ArpOutput);
+
+	void PrintIPAddressArray(const std::vector<IPAddressInfo>& IPAddressArray);
+
 private:
 	int m_Delay;
 
-	std::vector<IPAddressInfo> IPAddressArray;
+	std::vector<IPAddressInfo> m_IPAddressArrayA;
+	std::vector<IPAddressInfo> m_IPAddressArrayB;
 };
 
