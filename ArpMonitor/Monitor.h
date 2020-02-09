@@ -9,7 +9,7 @@ struct IPAddressInfo
 	std::string MACAddress;
 	bool dynamic;
 
-	bool newEntry, elapsedEntry;
+	bool elapsedEntry, newMAC, newIP, checked;
 };
 
 class Monitor
@@ -29,6 +29,8 @@ public:
 	void PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const std::string& ArpOutput);
 
 	void PrintIPAddressArray(const std::vector<IPAddressInfo>& IPAddressArray);
+
+	void CompareIPAddressArrays(std::vector<IPAddressInfo>* IPAddressArrayOld, std::vector<IPAddressInfo>* IPAddressArrayNew);
 
 private:
 	int m_Delay;

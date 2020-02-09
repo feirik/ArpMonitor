@@ -1,6 +1,9 @@
 #include "Math.h"
 
 #include <cctype>
+#include <chrono>
+
+#include <iostream>
 
 namespace math {
 
@@ -16,5 +19,16 @@ bool IsInteger(const std::string& input)
 
 	// If iterator made it til the end and string is not empty, return true
 	return !input.empty() && it == input.end();
+}
+
+void Delay(int delayInSeconds)
+{
+	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+	while (std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() < delayInSeconds)
+	{
+		end = std::chrono::steady_clock::now();
+	}
 }
 } // Namespace
