@@ -1,18 +1,15 @@
-#include <iostream>
-
-#include <string>
 #include <sstream>
 
 #include "Monitor.h"
 #include "Math.h"
+#include "Log.h"
 
 #define MIN_DELAY 1
 #define MAX_DELAY 30
 
 int main(int argc, char* argv[])
 {
-
-	std::cout << "Start!" << std::endl;
+	std::cout << GetCurrentTimeAsString() << " ARP monitor started..." << std::endl;
 
 	int delay = 0;
 
@@ -28,7 +25,6 @@ int main(int argc, char* argv[])
 		}
 
 		std::cout << "Delay: " << argv[1] << std::endl;
-
 	}
 	else
 	{
