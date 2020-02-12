@@ -27,3 +27,19 @@ std::string LogArpEvent(const std::string& description, const IPAddressInfo& ent
 {
 	return GetCurrentTimeAsString() + " " + description + ": " + entry.MACAddress + " " + IP::GetIPAddressAsString(entry);
 }
+
+void LogToFile(std::string input, std::string path)
+{
+	std::ofstream outFile;
+
+	outFile.open(path, std::ios_base::app);
+
+	if (!outFile.is_open())
+	{
+		std::cout << "Could not open output file " << path << std::endl;
+	}
+	else
+	{
+		outFile << input << "\n";
+	}
+}

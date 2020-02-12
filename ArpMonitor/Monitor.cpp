@@ -3,16 +3,19 @@
 #include "Math.h"
 #include "Log.h"
 
-
 #define MAC_LENGTH 17
 #define STATIC_WORDLEN 6
 #define DYNAMIC_WORDLEN 7
 
-
 Monitor::Monitor(int delay)
 	: m_Delay(delay)
 {
-	std::cout << "Created monitor with delay: " << GetDelay() << std::endl;
+	std::string startMsg = GetCurrentTimeAsString() + " Started ArpMonitor successfully with delay " + 
+						   std::to_string(GetDelay()) + " seconds...";
+
+	std::cout << startMsg << std::endl;
+
+	LogToFile(startMsg, LOG_PATH);
 
 	std::string ArpOutput = cmd::GetCommandOutput("arp -a");
 
@@ -59,8 +62,12 @@ Monitor::Monitor(int delay)
 
 Monitor::~Monitor()
 {
-}
+	std::string endMsg = GetCurrentTimeAsString() + " Shut down ArpMonitor.";
 
+	std::cout << endMsg << std::endl;
+
+	LogToFile(endMsg, LOG_PATH);
+}
 
 void Monitor::SetDelay(int delay)
 {
@@ -76,7 +83,10 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 {
 	if (ArpOutput.substr(0, 7).find("No ARP") != std::string::npos)
 	{
-		std::cout << GetCurrentTimeAsString() << " Command line error, ARP output not available." << std::endl;
+		std::string error = GetCurrentTimeAsString() + " Command line error, ARP output not available.";
+
+		LogToFile(error, LOG_PATH);
+		std::cout << error << std::endl;
 	}
 	else
 	{
@@ -288,6 +298,7 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 			{
 				std::string log = LogArpEvent("Multi-IP entry elapsed", Old.at(j));
 
+				LogToFile(log, LOG_PATH);
 				std::cout << log << std::endl;
 			}
 			// Regular entry must have eleapsed
@@ -295,8 +306,8 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 			{
 				std::string log = LogArpEvent("ARP entry elapsed", Old.at(j));
 
+				LogToFile(log, LOG_PATH);
 				std::cout << log << std::endl;
-
 			}
 		}
 	}
@@ -307,6 +318,7 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 		{
 			std::string log = LogArpEvent("New ARP entry", New.at(i));
 
+			LogToFile(log, LOG_PATH);
 			std::cout << log << std::endl;
 		}
 		else if (New.at(i).newIP == true || New.at(i).newMAC == true)
@@ -315,18 +327,21 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 			{
 				std::string log = LogArpEvent("New multi-IP ARP entry", New.at(i));
 
+				LogToFile(log, LOG_PATH);
 				std::cout << log << std::endl;
 			}
 			else if(New.at(i).newMAC == true)
 			{
 				std::string log = LogArpEvent("New MAC address broadcasting old IP", New.at(i));
 
+				LogToFile(log, LOG_PATH);
 				std::cout << log << std::endl;
 			}
 			else
 			{
 				std::string log = LogArpEvent("Old MAC address broadcasting new IP", New.at(i));
 
+				LogToFile(log, LOG_PATH);
 				std::cout << log << std::endl;
 			}
 		}

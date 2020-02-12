@@ -31,9 +31,7 @@ int main(int argc, char* argv[])
 		std::cout << "ERROR. Usage: Enter integer delay " << MIN_DELAY << "-" << MAX_DELAY << " seconds as an agrument." << std::endl;
 	}
 
-	Monitor m1(delay);
-
-	//std::cin.get();
+	Monitor monitor(delay);
 
 	return 0;
 }
