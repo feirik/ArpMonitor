@@ -7,31 +7,69 @@
 #define MIN_DELAY 1
 #define MAX_DELAY 30
 
+void PrintDelayError()
+{
+	std::cout << "ERROR. Usage: Enter integer delay " << MIN_DELAY << "-" << MAX_DELAY << " seconds as an agrument." << std::endl;
+}
+
+bool ProcessDelay(int* delay, const char* argv)
+{
+	std::istringstream ss(argv);
+	ss >> *delay;
+
+	if (MIN_DELAY > *delay || *delay > MAX_DELAY)
+	{
+		PrintDelayError();
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+}
+
 int main(int argc, char* argv[])
 {
 	std::cout << GetCurrentTimeAsString() << " ARP monitor started..." << std::endl;
 
 	int delay = 0;
+	bool writeToConsole = 1;
 
-	if (argc == 2 && math::IsInteger(argv[1]) == 1)
+	if (argc == 2 && math::IsInteger(argv[1]) == true)
 	{
-		std::istringstream ss(argv[1]);
-		ss >> delay;
+		bool result = ProcessDelay(&delay, argv[1]);
 
-		if (1 > delay || delay > 30)
+		if (!result)
 		{
-			std::cout << "ERROR. Usage: Enter integer delay " << MIN_DELAY << "-" << MAX_DELAY << " seconds as an agrument." << std::endl;
 			return 0;
 		}
+	}
+	else if (argc == 3 && math::IsInteger(argv[1]) == true)
+	{
+		std::string argv2 = argv[2];
 
-		std::cout << "Delay: " << argv[1] << std::endl;
+		if (argv2 == "-logonly")
+		{
+			bool result = ProcessDelay(&delay, argv[1]);
+
+			if (!result)
+			{
+				return 0;
+			}
+
+			writeToConsole = 0;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 	else
 	{
-		std::cout << "ERROR. Usage: Enter integer delay " << MIN_DELAY << "-" << MAX_DELAY << " seconds as an agrument." << std::endl;
+		PrintDelayError();
 	}
 
-	Monitor monitor(delay);
+	Monitor monitor(delay, writeToConsole);
 
 	return 0;
 }

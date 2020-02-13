@@ -7,15 +7,21 @@
 #define STATIC_WORDLEN 6
 #define DYNAMIC_WORDLEN 7
 
-Monitor::Monitor(int delay)
-	: m_Delay(delay)
+Monitor::Monitor(int delay, bool writeToConsole)
+	: m_Delay(delay), m_writeToConsole(writeToConsole), m_VectorCapacity(5)
 {
 	std::string startMsg = GetCurrentTimeAsString() + " Started ArpMonitor successfully with delay " + 
 						   std::to_string(GetDelay()) + " seconds...";
 
-	std::cout << startMsg << std::endl;
+	if (WriteToConsole() == true)
+	{
+		std::cout << startMsg << std::endl;
+	}
 
 	LogToFile(startMsg, LOG_PATH);
+
+	m_IPAddressArrayA.reserve(GetVectorCapacity());
+	m_IPAddressArrayB.reserve(GetVectorCapacity());
 
 	std::string ArpOutput = cmd::GetCommandOutput("arp -a");
 
@@ -23,40 +29,29 @@ Monitor::Monitor(int delay)
 
 	IP::PrintIPAddressArray(m_IPAddressArrayA);
 
-	bool switchFlag = 0;
-
 	while (true)
 	{
 		math::Delay(GetDelay());
 
+		// Updating B array
 		std::string ArpOutput = cmd::GetCommandOutput("arp -a");
 
-		if (switchFlag == 0)
-		{
-			PopulateArpInfo(&m_IPAddressArrayB, ArpOutput);
+		PopulateArpInfo(&m_IPAddressArrayB, ArpOutput);
 
-			CompareIPAddressArrays(&m_IPAddressArrayA, &m_IPAddressArrayB);
+		CompareIPAddressArrays(&m_IPAddressArrayA, &m_IPAddressArrayB);
 
-			LogArpEvents(m_IPAddressArrayA, m_IPAddressArrayB);
-
-			switchFlag = 1;
-		}
+		LogArpEvents(m_IPAddressArrayA, m_IPAddressArrayB);
 
 		math::Delay(GetDelay());
 
-		if (switchFlag == 1)
-		{
-			PopulateArpInfo(&m_IPAddressArrayA, ArpOutput);
+		// Updating A array
+		ArpOutput = cmd::GetCommandOutput("arp -a");
 
-			CompareIPAddressArrays(&m_IPAddressArrayB, &m_IPAddressArrayA);
+		PopulateArpInfo(&m_IPAddressArrayA, ArpOutput);
 
-			LogArpEvents(m_IPAddressArrayB, m_IPAddressArrayA);
+		CompareIPAddressArrays(&m_IPAddressArrayB, &m_IPAddressArrayA);
 
-			switchFlag = 0;
-
-		}
-
-		math::Delay(GetDelay());
+		LogArpEvents(m_IPAddressArrayB, m_IPAddressArrayA);
 	}
 }
 
@@ -64,7 +59,10 @@ Monitor::~Monitor()
 {
 	std::string endMsg = GetCurrentTimeAsString() + " Shut down ArpMonitor.";
 
-	std::cout << endMsg << std::endl;
+	if (WriteToConsole() == true)
+	{
+		std::cout << endMsg << std::endl;
+	}
 
 	LogToFile(endMsg, LOG_PATH);
 }
@@ -86,7 +84,11 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 		std::string error = GetCurrentTimeAsString() + " Command line error, ARP output not available.";
 
 		LogToFile(error, LOG_PATH);
-		std::cout << error << std::endl;
+
+		if (WriteToConsole() == true)
+		{
+			std::cout << error << std::endl;
+		}
 	}
 	else
 	{
@@ -299,7 +301,11 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 				std::string log = LogArpEvent("Multi-IP entry elapsed", Old.at(j));
 
 				LogToFile(log, LOG_PATH);
-				std::cout << log << std::endl;
+
+				if (WriteToConsole() == true)
+				{
+					std::cout << log << std::endl;
+				}
 			}
 			// Regular entry must have eleapsed
 			else
@@ -307,7 +313,11 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 				std::string log = LogArpEvent("ARP entry elapsed", Old.at(j));
 
 				LogToFile(log, LOG_PATH);
-				std::cout << log << std::endl;
+
+				if (WriteToConsole() == true)
+				{
+					std::cout << log << std::endl;
+				}
 			}
 		}
 	}
@@ -319,7 +329,11 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 			std::string log = LogArpEvent("New ARP entry", New.at(i));
 
 			LogToFile(log, LOG_PATH);
-			std::cout << log << std::endl;
+
+			if (WriteToConsole() == true)
+			{
+				std::cout << log << std::endl;
+			}
 		}
 		else if (New.at(i).newIP == true || New.at(i).newMAC == true)
 		{
@@ -328,22 +342,49 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 				std::string log = LogArpEvent("New multi-IP ARP entry", New.at(i));
 
 				LogToFile(log, LOG_PATH);
-				std::cout << log << std::endl;
+
+				if (WriteToConsole() == true)
+				{
+					std::cout << log << std::endl;
+				}
 			}
 			else if(New.at(i).newMAC == true)
 			{
 				std::string log = LogArpEvent("New MAC address broadcasting old IP", New.at(i));
 
 				LogToFile(log, LOG_PATH);
-				std::cout << log << std::endl;
+
+				if (WriteToConsole() == true)
+				{
+					std::cout << log << std::endl;
+				}
 			}
 			else
 			{
 				std::string log = LogArpEvent("Old MAC address broadcasting new IP", New.at(i));
 
 				LogToFile(log, LOG_PATH);
-				std::cout << log << std::endl;
+
+				if (WriteToConsole() == true)
+				{
+					std::cout << log << std::endl;
+				}
 			}
 		}
 	}
+}
+
+bool Monitor::WriteToConsole()
+{
+	return m_writeToConsole;
+}
+
+int Monitor::GetVectorCapacity()
+{
+	return m_VectorCapacity;
+}
+
+void Monitor::SetVectorCapacity(int capacity)
+{
+	m_VectorCapacity = capacity;
 }

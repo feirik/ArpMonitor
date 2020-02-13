@@ -5,7 +5,7 @@
 class Monitor
 {
 public:
-	Monitor(int delay);
+	Monitor(int delay, bool logOnly);
 	~Monitor();
 
 	void SetDelay(int delay);
@@ -18,8 +18,18 @@ public:
 
 	void LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vector<IPAddressInfo>& New);
 
+	bool WriteToConsole();
+
+	int GetVectorCapacity();
+
+	void SetVectorCapacity(int capacity);
+
 private:
 	int m_Delay;
+
+	bool m_writeToConsole;
+
+	int m_VectorCapacity;
 
 	std::vector<IPAddressInfo> m_IPAddressArrayA;
 	std::vector<IPAddressInfo> m_IPAddressArrayB;
