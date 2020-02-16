@@ -6,10 +6,15 @@
 #define MAC_LENGTH 17
 #define STATIC_WORDLEN 6
 #define DYNAMIC_WORDLEN 7
+#define START_CAPACITY 5
 
 Monitor::Monitor(int delay, bool writeToConsole)
-	: m_Delay(delay), m_writeToConsole(writeToConsole), m_VectorCapacity(5)
+	: m_Delay(delay), m_writeToConsole(writeToConsole), m_vectorCapacity(START_CAPACITY)
 {
+	// Initializing vector capacity to avoid unnecessary vector copies
+	m_IPAddressArrayA.reserve(GetVectorCapacity());
+	m_IPAddressArrayB.reserve(GetVectorCapacity());
+
 	std::string startMsg = GetCurrentTimeAsString() + " Started ArpMonitor successfully with delay " + 
 						   std::to_string(GetDelay()) + " seconds...";
 
@@ -20,15 +25,14 @@ Monitor::Monitor(int delay, bool writeToConsole)
 
 	LogToFile(startMsg, LOG_PATH);
 
-	m_IPAddressArrayA.reserve(GetVectorCapacity());
-	m_IPAddressArrayB.reserve(GetVectorCapacity());
-
+	// Getting initidal arp -a output to create a comparsion entry
 	std::string ArpOutput = cmd::GetCommandOutput("arp -a");
 
 	PopulateArpInfo(&m_IPAddressArrayA, ArpOutput);
 
 	IP::PrintIPAddressArray(m_IPAddressArrayA);
 
+	// Main loop, A/B swaps for comparing the arrays
 	while (true)
 	{
 		math::Delay(GetDelay());
@@ -77,6 +81,12 @@ int Monitor::GetDelay()
 	return m_Delay;
 }
 
+/*
+Input of a vector of IPAddressArray pointer, const reference arp output string
+Checks to see if arp output resulted in an error, if error, logs and prints error info.
+If no error, populates IP address, MAC address and static/dynamic info into array until end of output.
+No output from function
+*/
 void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const std::string& ArpOutput)
 {
 	if (ArpOutput.substr(0, 7).find("No ARP") != std::string::npos)
@@ -94,9 +104,7 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 	{
 		// Find last word before IP addresses begin
 		std::string target = "Type";
-
 		std::size_t charPos = ArpOutput.find(target);
-
 		std::size_t IPPos = charPos + target.length();
 
 		int IPAddressRow = 0;
@@ -109,8 +117,10 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 			// Find start of IP address
 			if (!isspace(*it))
 			{
+				// Make space in vector
 				IPAddressArray->emplace_back();
 
+				// Populating the 4 IP octets
 				for (int i = 0; i < 4; ++i)
 				{
 					int octet = IP::GetIPOctetAsInt(*it, *(it + 1), *(it + 2));
@@ -171,6 +181,12 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 	}
 }
 
+/*
+Input of two vectors of IPAddressInfo array pointers
+Resets flags from previous comparisons.
+Sets flags based on comparison logic between the old and new array describing changes to arp output.
+No output
+*/
 void Monitor::CompareIPAddressArrays(std::vector<IPAddressInfo>* Old, std::vector<IPAddressInfo>* New)
 {
 	size_t newSize = New->size();
@@ -197,9 +213,10 @@ void Monitor::CompareIPAddressArrays(std::vector<IPAddressInfo>* Old, std::vecto
 	{
 		for (size_t k = 0; k < newSize; ++k)
 		{
-			// Different iterator value is checked, and duplicate has not been flagged yet
+			// If duplicate flag has not been set yet
 			if (i != k && New->at(k).multiIP == false)
 			{
+				// Flag both entries
 				if (New->at(i).MACAddress == New->at(k).MACAddress)
 				{
 					New->at(i).multiIP = true;
@@ -276,7 +293,7 @@ void Monitor::CompareIPAddressArrays(std::vector<IPAddressInfo>* Old, std::vecto
 
 	for (size_t i = 0; i < newSize; ++i)
 	{
-		// If new array hasn't been checked by previous loops, must be a new entry of both MAC and IP
+		// If new array hasn't been checked in previous loops, must be a new entry of both MAC and IP
 		if (New->at(i).checked == false)
 		{
 			New->at(i).newIP = true;
@@ -285,11 +302,18 @@ void Monitor::CompareIPAddressArrays(std::vector<IPAddressInfo>* Old, std::vecto
 	}
 }
 
+/*
+Input of two const reference vectors of IPAddressInfo
+Logs and outputs text based on flags in vectors-
+Old vector flags describe elapsed changes, new vector flags describe new entries.
+No output from function
+*/
 void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vector<IPAddressInfo>& New)
 {
 	size_t newSize = New.size();
 	size_t oldSize = Old.size();
 
+	// Checking elapsed entries
 	for (size_t j = 0; j < oldSize; ++j)
 	{
 		// If no match has been found when comparing old entry to new entry
@@ -307,7 +331,7 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 					std::cout << log << std::endl;
 				}
 			}
-			// Regular entry must have eleapsed
+			// Regular entry must have elapsed
 			else
 			{
 				std::string log = LogArpEvent("ARP entry elapsed", Old.at(j));
@@ -322,8 +346,10 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 		}
 	}
 
+	// Checking new entries
 	for (size_t i = 0; i < newSize; ++i)
 	{
+		// If new IP and MAC address is found, must be a new entry
 		if (New.at(i).newIP == true && New.at(i).newMAC == true)
 		{
 			std::string log = LogArpEvent("New ARP entry", New.at(i));
@@ -381,10 +407,10 @@ bool Monitor::WriteToConsole()
 
 int Monitor::GetVectorCapacity()
 {
-	return m_VectorCapacity;
+	return m_vectorCapacity;
 }
 
 void Monitor::SetVectorCapacity(int capacity)
 {
-	m_VectorCapacity = capacity;
+	m_vectorCapacity = capacity;
 }

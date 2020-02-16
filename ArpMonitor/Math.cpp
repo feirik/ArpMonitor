@@ -7,6 +7,11 @@
 
 namespace math {
 
+/*
+Input of a const reference string
+Iterates string to check if all characters in the string are digits
+Returns true if all characters are digits, else false
+*/
 bool IsInteger(const std::string& input)
 {
 	std::string::const_iterator it = input.begin();
@@ -21,6 +26,11 @@ bool IsInteger(const std::string& input)
 	return !input.empty() && it == input.end();
 }
 
+/*
+Takes an integer delay as input
+Delays program execution of the input amount of seconds
+No output
+*/
 void Delay(int delayInSeconds)
 {
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();

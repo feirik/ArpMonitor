@@ -25,7 +25,5 @@ bool IsSameIP(const IPAddressInfo& Old, const IPAddressInfo& New);
 
 std::string GetIPAddressAsString(const IPAddressInfo& address);
 
-
-
 } // Namespace
 

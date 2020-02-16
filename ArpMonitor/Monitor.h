@@ -29,7 +29,7 @@ private:
 
 	bool m_writeToConsole;
 
-	int m_VectorCapacity;
+	int m_vectorCapacity;
 
 	std::vector<IPAddressInfo> m_IPAddressArrayA;
 	std::vector<IPAddressInfo> m_IPAddressArrayB;

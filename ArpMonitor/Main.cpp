@@ -12,6 +12,11 @@ void PrintDelayError()
 	std::cout << "ERROR. Usage: Enter integer delay " << MIN_DELAY << "-" << MAX_DELAY << " seconds as an agrument." << std::endl;
 }
 
+/*
+Input of a int pointer delay, const char* argument
+Stores argument in integer pointer
+Returns 1 if delay value is within limits, else false and prints error message
+*/
 bool ProcessDelay(int* delay, const char* argv)
 {
 	std::istringstream ss(argv);
