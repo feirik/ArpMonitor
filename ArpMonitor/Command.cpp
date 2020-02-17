@@ -43,46 +43,30 @@ If a name is not found, 'Unknown' is returned as a string and an error is logged
 */
 std::string GetNetworkName(const IPAddressInfo& address)
 {
-	std::string command = "nslookup " + IP::GetIPAddressAsString(address);
-	std::string nslookupOutput = GetCommandOutput(command.c_str());
+	// Running script with a filter for DNS name to avoid cerr output of default nslookup
+	std::string command = "DNSname.bat " + IP::GetIPAddressAsString(address);
+	std::string DNSname = GetCommandOutput(command.c_str());
 
-	std::string target = "Name:";
-	std::size_t targetPos = nslookupOutput.find(target);
-	std::size_t namePos = targetPos + target.length();
-
-	// If 'Name:' is part of command output
-	if (targetPos != std::string::npos)
+	// Stripping new line '\n' char at end of string
+	if (!DNSname.empty() && DNSname[DNSname.length() - 1] == '\n')
 	{
-		for (auto it = nslookupOutput.begin() + namePos; it != nslookupOutput.end(); ++it)
-		{
-			// Find start of name description
-			if (!isspace(*it))
-			{
-				int nameStart = it - nslookupOutput.begin();
-
-				// Iterate while characters in description is not space
-				while (!isspace(*it))
-				{
-					++it;
-				}
-
-				int nameLength = it - nslookupOutput.begin() - nameStart;
-
-				// Return substring
-				return nslookupOutput.substr(nameStart, nameLength);
-			}
-		}
-		return "";
+		DNSname.erase(DNSname.length() - 1);
 	}
-	// 'Name:' is not found as part of command output, log DNS error and return unknown
-	else
+
+	// DNS name not found in script, log error
+	if (DNSname == "Unknown")
 	{
-		std::string log = GetCurrentTimeAsString() + " " + "Unable to resolve DNS name for: " + address.MACAddress + 
+		std::string log = GetCurrentTimeAsString() + " " + "Unable to resolve DNS name for: " + address.MACAddress +
 						  IP::GetIPAddressAsString(address);
 
 		LogToFile(log, LOG_PATH);
 
-		return "Unknown";
+		return DNSname;
+	}
+	// DNS name found in script
+	else
+	{
+		return DNSname;
 	}
 }
 } // Namespace
