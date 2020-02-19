@@ -7,6 +7,8 @@
 #define MIN_DELAY 1
 #define MAX_DELAY 30
 
+#define DEFAULT_DELAY 5
+
 void PrintDelayError()
 {
 	std::cout << "ERROR. Usage: Enter integer delay " << MIN_DELAY << "-" << MAX_DELAY << " seconds as an agrument." << std::endl;
@@ -40,7 +42,11 @@ int main(int argc, char* argv[])
 	int delay = 0;
 	bool writeToConsole = 1;
 
-	if (argc == 2 && math::IsInteger(argv[1]) == true)
+	if (argc == 1)
+	{
+		delay = DEFAULT_DELAY;
+	}
+	else if (argc == 2 && math::IsInteger(argv[1]) == true)
 	{
 		bool result = ProcessDelay(&delay, argv[1]);
 
