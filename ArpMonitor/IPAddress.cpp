@@ -56,23 +56,6 @@ int GetNumberOfOctetDigits(int octet)
 		return 1;
 	}
 }
-/*
-Takes a const reference vector of IPAddressInfo as input
-Prints the IP address, MAC address and flags for the IPAddressInfo entries in the array
-No return
-*/
-void PrintIPAddressArray(const std::vector<IPAddressInfo>& Array)
-{
-	std::cout << "Printing IP address array: " << " Size: " << Array.size() << std::endl;
-
-	for (size_t i = 0; i < Array.size(); ++i)
-	{
-		std::cout << GetIPAddressAsString(Array.at(i)) << " " << Array.at(i).MACAddress << " Dyn:" << Array.at(i).dynamic
-			<< " Checked:" << Array.at(i).checked
-			<< " New IP: " << Array.at(i).newIP << " New MAC: " << Array.at(i).newMAC << std::endl;
-	}
-}
-
 
 /*
 Input of 2 const reference IPAddressInfo entries

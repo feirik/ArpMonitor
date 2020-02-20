@@ -30,7 +30,7 @@ Monitor::Monitor(int delay, bool writeToConsole)
 
 	PopulateArpInfo(&m_IPAddressArrayA, ArpOutput);
 
-	IP::PrintIPAddressArray(m_IPAddressArrayA);
+	LogInitialArpStatus(m_IPAddressArrayA, WriteToConsole());
 
 	// Main loop, A/B swaps for comparing the arrays
 	while (true)
@@ -175,8 +175,22 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 					it += STATIC_WORDLEN;
 				}
 
-				// Construct new entry at the end of array
-				IPAddressArray->emplace_back(newEntry);
+				// Construct new entry at the back of array
+				try
+				{
+					IPAddressArray->emplace_back(newEntry);
+				}
+				// Output error if memory allocation fails
+				catch (const std::bad_alloc&)
+				{
+					std::string log = GetCurrentTimeAsString() + "FATAL ERROR. Unable to allocate enough memory.";
+
+					if (WriteToConsole() == true)
+					{
+						std::cout << log << std::endl;
+					}
+					LogToFile(log, LOG_PATH);
+				}
 			}
 		}
 	}

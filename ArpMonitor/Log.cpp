@@ -58,3 +58,22 @@ void LogToFile(std::string input, std::string path)
 		std::cout << "Could not open output file " << path << "." << std::endl;
 	}
 }
+/*
+Takes a const reference vector of IPAddressInfo and bool write to console flag as input
+Logs the IP address, MAC address and domain name for the IPAddressInfo entries in the array
+Prints the same info if flag is set to true
+No return
+*/
+void LogInitialArpStatus(const std::vector<IPAddressInfo>& Array, bool writeToConsole)
+{
+	for (size_t i = 0; i < Array.size(); ++i)
+	{
+		std::string log = LogArpEvent("ARP entry at startup", Array.at(i));
+
+		if (writeToConsole == true)
+		{
+			std::cout << log << std::endl;
+		}
+		LogToFile(log, LOG_PATH);
+	}
+}
