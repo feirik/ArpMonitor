@@ -107,7 +107,7 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 		std::size_t charPos = ArpOutput.find(target);
 		std::size_t IPPos = charPos + target.length();
 
-		int IPAddressRow = 0;
+		//int IPAddressRow = 0;
 
 		IPAddressArray->clear();
 
@@ -117,8 +117,8 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 			// Find start of IP address
 			if (!isspace(*it))
 			{
-				// Make space in vector
-				IPAddressArray->emplace_back();
+				// Define new row entry
+				IPAddressInfo newEntry;
 
 				// Populating the 4 IP octets
 				for (int i = 0; i < 4; ++i)
@@ -129,9 +129,9 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 					{
 						switch (i)
 						{
-						case 0: IPAddressArray->at(IPAddressRow).a = octet; break;
-						case 1: IPAddressArray->at(IPAddressRow).b = octet; break;
-						case 2: IPAddressArray->at(IPAddressRow).c = octet; break;
+						case 0: newEntry.a = octet; break;
+						case 1: newEntry.b = octet; break;
+						case 2: newEntry.c = octet; break;
 						default:
 							break;
 						}
@@ -140,7 +140,7 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 					}
 					if (i == 3)
 					{
-						IPAddressArray->at(IPAddressRow).d = octet;
+						newEntry.d = octet;
 						it += IP::GetNumberOfOctetDigits(octet);
 					}
 				}
@@ -154,7 +154,7 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 				size_t itPos = it - ArpOutput.begin();
 
 				// Store MAC address sub-string
-				IPAddressArray->at(IPAddressRow).MACAddress = ArpOutput.substr(itPos, MAC_LENGTH);
+				newEntry.MACAddress = ArpOutput.substr(itPos, MAC_LENGTH);
 
 				it += MAC_LENGTH;
 
@@ -166,16 +166,17 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 
 				if (*it == 'd')
 				{
-					IPAddressArray->at(IPAddressRow).dynamic = true;
+					newEntry.dynamic = true;
 					it += DYNAMIC_WORDLEN;
 				}
 				else if (*it == 's')
 				{
-					IPAddressArray->at(IPAddressRow).dynamic = false;
+					newEntry.dynamic = false;
 					it += STATIC_WORDLEN;
 				}
 
-				++IPAddressRow;
+				// Construct new entry at the end of array
+				IPAddressArray->emplace_back(newEntry);
 			}
 		}
 	}
@@ -193,14 +194,6 @@ void Monitor::CompareIPAddressArrays(std::vector<IPAddressInfo>* Old, std::vecto
 	size_t oldSize = Old->size();
 
 	// Reset flags from previous comparison
-	for (size_t i = 0; i < newSize; ++i)
-	{
-		New->at(i).checked = false;
-		New->at(i).newIP = false;
-		New->at(i).newMAC = false;
-		New->at(i).multiIP = false;
-	}
-
 	for (size_t j = 0; j < oldSize; ++j)
 	{
 		Old->at(j).checked = false;

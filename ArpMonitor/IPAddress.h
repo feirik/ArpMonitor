@@ -10,7 +10,7 @@ struct IPAddressInfo
 	std::string MACAddress;
 	bool dynamic;
 
-	bool newMAC, newIP, checked, multiIP;
+	bool newMAC = false, newIP = false, checked = false, multiIP = false;
 };
 
 namespace IP {
