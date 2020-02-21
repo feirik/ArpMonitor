@@ -56,10 +56,13 @@ std::string GetNetworkName(const IPAddressInfo& address)
 	// DNS name not found in script, log error
 	if (DNSname == "Unknown")
 	{
-		std::string log = GetCurrentTimeAsString() + " " + "Unable to resolve DNS name for: " + address.MACAddress + " " +
-						  IP::GetIPAddressAsString(address);
+		if (LOG_DNS_ERROR == true)
+		{
+			std::string log = GetCurrentTimeAsString() + " " + "Unable to resolve DNS name for: " + address.MACAddress + " " +
+				IP::GetIPAddressAsString(address);
 
-		LogToFile(log, LOG_PATH);
+			LogToFile(log, LOG_PATH);
+		}
 
 		return DNSname;
 	}

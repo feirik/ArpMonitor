@@ -7,6 +7,7 @@
 #include "IPAddress.h"
 
 #define LOG_PATH "ArpMonitor.log"
+#define LOG_DNS_ERROR 0
 
 std::string GetCurrentTimeAsString();
 
