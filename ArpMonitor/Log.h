@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string>
-#include <iostream>
-#include <fstream>
-
 #include "IPAddress.h"
+
+#include <fstream>
+#include <iostream>
+#include <string>
 
 #define LOG_PATH "ArpMonitor.log"
 #define LOG_DNS_ERROR 0

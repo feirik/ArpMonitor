@@ -1,14 +1,11 @@
 #include "Command.h"
 #include "Log.h"
 
-#include <iostream>
-
+#include <array>
 #include <cstdio>
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <array>
-
 
 namespace cmd {
 

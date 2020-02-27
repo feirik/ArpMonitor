@@ -1,11 +1,11 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#include "Log.h"
 #include "Command.h"
+#include "Log.h"
 
+#include <algorithm>
 #include <chrono>
 #include <ctime>
-#include <algorithm>
 
 /*
 Takes no input

@@ -3,8 +3,6 @@
 #include <cctype>
 #include <chrono>
 
-#include <iostream>
-
 namespace math {
 
 /*

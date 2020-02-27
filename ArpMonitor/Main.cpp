@@ -1,8 +1,8 @@
-#include <sstream>
-
-#include "Monitor.h"
-#include "Math.h"
 #include "Log.h"
+#include "Math.h"
+#include "Monitor.h"
+
+#include <sstream>
 
 #define MIN_DELAY 1
 #define MAX_DELAY 30
@@ -37,8 +37,6 @@ bool ProcessDelay(int* delay, const char* argv)
 
 int main(int argc, char* argv[])
 {
-	std::cout << GetCurrentTimeAsString() << " ARP monitor started..." << std::endl;
-
 	int delay = 0;
 	bool writeToConsole = 1;
 
