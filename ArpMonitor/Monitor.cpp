@@ -117,6 +117,12 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 			// Find start of IP address
 			if (!isspace(*it))
 			{
+				// If 'Interface' is found after finding 'Type', stop populating as output must show a new adapter
+				if (*it == 'I' && *(it+1) == 'n' && *(it + 2) == 't')
+				{
+					break;
+				}
+
 				// Define new row entry
 				IPAddressInfo newEntry;
 
