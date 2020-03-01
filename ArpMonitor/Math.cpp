@@ -2,6 +2,7 @@
 
 #include <cctype>
 #include <chrono>
+#include <thread>
 
 namespace math {
 
@@ -37,6 +38,7 @@ void Delay(int delayInSeconds)
 	while (std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() < delayInSeconds)
 	{
 		end = std::chrono::steady_clock::now();
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 } // Namespace
