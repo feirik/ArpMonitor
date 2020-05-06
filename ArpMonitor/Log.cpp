@@ -32,10 +32,22 @@ std::string GetCurrentTimeAsString()
 Input of a string description and a const reference IPAddressInfo
 Returns current time, the description, MAC address, IP address and network name as a string.
 */
-std::string LogArpEvent(const std::string& description, const IPAddressInfo& entry)
+std::string LogArpEvent(const std::string& description, const IPAddressInfo& entry, const bool passive)
 {
-	return GetCurrentTimeAsString() + " " + description + ": " + entry.MACAddress + " "
-		 + IP::GetIPAddressAsString(entry) + " " + cmd::GetNetworkName(entry);
+	std::string returnStr;
+
+	if (!passive)
+	{
+		returnStr = GetCurrentTimeAsString() + " " + description + ": " + entry.MACAddress + " "
+			+ IP::GetIPAddressAsString(entry) + " " + cmd::GetNetworkName(entry);
+	}
+	else
+	{
+		returnStr = GetCurrentTimeAsString() + " " + description + ": " + entry.MACAddress + " "
+			+ IP::GetIPAddressAsString(entry);
+	}
+
+	return returnStr;
 }
 
 /*
@@ -64,11 +76,11 @@ Logs the IP address, MAC address and domain name for the IPAddressInfo entries i
 Prints the same info if flag is set to true
 No return
 */
-void LogInitialArpStatus(const std::vector<IPAddressInfo>& Array, bool writeToConsole)
+void LogInitialArpStatus(const std::vector<IPAddressInfo>& Array, const bool writeToConsole, const bool passive)
 {
 	for (size_t i = 0; i < Array.size(); ++i)
 	{
-		std::string log = LogArpEvent("ARP entry at startup", Array.at(i));
+		std::string log = LogArpEvent("ARP entry at startup", Array.at(i), passive);
 
 		if (writeToConsole == true)
 		{

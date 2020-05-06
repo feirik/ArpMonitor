@@ -11,10 +11,10 @@
 
 std::string GetCurrentTimeAsString();
 
-std::string LogArpEvent(const std::string& description, const IPAddressInfo& entry);
+std::string LogArpEvent(const std::string& description, const IPAddressInfo& entry, const bool passive);
 
 void LogToFile(std::string input, std::string path);
 
-void LogInitialArpStatus(const std::vector<IPAddressInfo>& Array, bool writeToConsole);
+void LogInitialArpStatus(const std::vector<IPAddressInfo>& Array, const bool writeToConsole, const bool passive);
 
 

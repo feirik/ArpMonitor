@@ -40,6 +40,8 @@ public:
 
 	void PrintSelectedInterface(const std::string& ArpOutput);
 
+	bool GetPassiveFlag();
+
 private:
 	int m_delay;
 
@@ -48,6 +50,8 @@ private:
 	int m_vectorCapacity;
 
 	std::string m_interface;
+
+	bool m_passiveFlag;
 
 	std::vector<IPAddressInfo> m_IPAddressArrayA;
 	std::vector<IPAddressInfo> m_IPAddressArrayB;
