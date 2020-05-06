@@ -2,10 +2,22 @@
 
 #include "IPAddress.h"
 
+#define DEFAULT_DELAY 5
+
+struct userInput
+{
+	std::string interfaceIn = "";
+	int delay = DEFAULT_DELAY;
+	bool logOnlyFlag = false;
+	bool passiveFlag = false;
+};
+
 class Monitor
 {
 public:
-	Monitor(int delay, bool logOnly);
+	//Monitor(int delay, bool logOnly);
+	Monitor(userInput inputs);
+
 	~Monitor();
 
 	void SetDelay(int delay);
@@ -24,12 +36,18 @@ public:
 
 	void SetVectorCapacity(int capacity);
 
+	std::string GetInterface();
+
+	void PrintSelectedInterface(const std::string& ArpOutput);
+
 private:
-	int m_Delay;
+	int m_delay;
 
 	bool m_writeToConsole;
 
 	int m_vectorCapacity;
+
+	std::string m_interface;
 
 	std::vector<IPAddressInfo> m_IPAddressArrayA;
 	std::vector<IPAddressInfo> m_IPAddressArrayB;

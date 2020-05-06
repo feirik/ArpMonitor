@@ -8,8 +8,9 @@
 #define DYNAMIC_WORDLEN 7
 #define START_CAPACITY 5
 
-Monitor::Monitor(int delay, bool writeToConsole)
-	: m_Delay(delay), m_writeToConsole(writeToConsole), m_vectorCapacity(START_CAPACITY)
+Monitor::Monitor(userInput inputs)
+	: m_delay(inputs.delay), m_writeToConsole(!inputs.logOnlyFlag), m_vectorCapacity(START_CAPACITY),
+	  m_interface(inputs.interfaceIn)
 {
 	// Initializing vector capacity to avoid unnecessary vector copies
 	m_IPAddressArrayA.reserve(GetVectorCapacity());
@@ -27,6 +28,8 @@ Monitor::Monitor(int delay, bool writeToConsole)
 
 	// Getting initidal arp -a output to create a comparsion entry
 	std::string ArpOutput = cmd::GetCommandOutput("arp -a");
+
+	PrintSelectedInterface(ArpOutput);
 
 	PopulateArpInfo(&m_IPAddressArrayA, ArpOutput);
 
@@ -73,12 +76,12 @@ Monitor::~Monitor()
 
 void Monitor::SetDelay(int delay)
 {
-	m_Delay = delay;
+	m_delay = delay;
 }
 
 int Monitor::GetDelay()
 {
-	return m_Delay;
+	return m_delay;
 }
 
 /*
@@ -102,10 +105,37 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 	}
 	else
 	{
-		// Find last word before IP addresses begin
-		std::string target = "Type";
-		std::size_t charPos = ArpOutput.find(target);
-		std::size_t IPPos = charPos + target.length();
+		std::size_t charPos;
+		std::string target;
+		std::size_t IPPos;
+
+		// Find start of selected interface, if provided
+		if (m_interface != "")
+		{
+			// Find start of selected interface in arp -a output
+			target = "Interface: " + GetInterface();
+			charPos = ArpOutput.find(target);
+			IPPos = charPos + target.length();
+
+			// Iterate until 'Type' is found
+			for (auto it = ArpOutput.begin() + IPPos; it != ArpOutput.end(); ++it)
+			{
+				if (*it == 'T' && *(it + 1) == 'y' && *(it + 2) == 'p')
+				{
+					// Skip chars before IP addresses begin
+					IPPos += 4;
+					break;
+				}
+				++IPPos;
+			}
+		}
+		else
+		{
+			// Find last word before IP addresses begin
+			target = "Type";
+			charPos = ArpOutput.find(target);
+			IPPos = charPos + target.length();
+		}
 
 		//int IPAddressRow = 0;
 
@@ -426,4 +456,44 @@ int Monitor::GetVectorCapacity()
 void Monitor::SetVectorCapacity(int capacity)
 {
 	m_vectorCapacity = capacity;
+}
+
+std::string Monitor::GetInterface()
+{
+	return m_interface;
+}
+
+/*
+Prints the selected interface if provided as command line argument
+Else prints the first interface in the ARP output
+*/
+void Monitor::PrintSelectedInterface(const std::string& ArpOutput)
+{
+	if (GetInterface() != "")
+	{
+		std::cout << GetCurrentTimeAsString() << " Monitoring interface " << GetInterface() << std::endl;
+	}
+	else
+	{
+		// Search for interface
+		std::string target = "Interface: ";
+		std::size_t charPos = ArpOutput.find(target);
+		std::size_t ItPos = charPos + target.length();
+
+		std::size_t interfaceLen = 0;
+
+		// Find length of interface IP address
+		for (auto it = ArpOutput.begin() + ItPos; it != ArpOutput.end(); ++it)
+		{
+			if (isspace(*it))
+			{
+				break;
+			}
+			++interfaceLen;
+		}
+
+		std::string defaultInterface = ArpOutput.substr(ItPos, interfaceLen);
+
+		std::cout << GetCurrentTimeAsString() << " Monitoring interface " << defaultInterface << std::endl;
+	}	
 }

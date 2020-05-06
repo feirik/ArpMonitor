@@ -1,13 +1,13 @@
 #include "Log.h"
 #include "Math.h"
 #include "Monitor.h"
+#include "Command.h"
+#include "CLI11.hpp"
 
 #include <sstream>
 
 #define MIN_DELAY 1
 #define MAX_DELAY 30
-
-#define DEFAULT_DELAY 5
 
 void PrintDelayError()
 {
@@ -37,48 +37,68 @@ bool ProcessDelay(int* delay, const char* argv)
 
 int main(int argc, char* argv[])
 {
-	int delay = 0;
-	bool writeToConsole = 1;
+	userInput inputs;
 
-	if (argc == 1)
-	{
-		delay = DEFAULT_DELAY;
-	}
-	else if (argc == 2 && math::IsInteger(argv[1]) == true)
-	{
-		bool result = ProcessDelay(&delay, argv[1]);
+	CLI::App app("ARP monitor for tracking changes to the ARP cache.");
 
-		if (!result)
+	//std::string interfaceIn = "";
+	app.add_option("-i,--interface", inputs.interfaceIn, "Set specific interface IP address to monitor.");
+
+	int delay = DEFAULT_DELAY;
+	app.add_option("-d,--delay", inputs.delay, "Set delay in seconds between ARP cache checks.");
+
+	bool logOnlyFlag = false;
+	app.add_flag("-l,--logonly", inputs.logOnlyFlag, "Only output events to logfile when set.");
+
+	/*bool passiveFlag = false;
+	app.add_flag("-p,--passive", inputs.passiveFlag, "Passively monitor ARP cache if set.");*/
+
+	CLI11_PARSE(app, argc, argv);
+
+	//std::cout << "Interface: " << inputs.interfaceIn << std::endl;
+
+	//std::cout << "Passiveflag: " << passiveFlag << std::endl;
+
+	//std::cout << "Delay: " << inputs.delay << std::endl;
+
+	//Checking user input
+	if (inputs.delay != DEFAULT_DELAY)
+	{
+		if (MIN_DELAY > inputs.delay || inputs.delay > MAX_DELAY)
 		{
+			PrintDelayError();
 			return 0;
 		}
 	}
-	else if (argc == 3 && math::IsInteger(argv[1]) == true)
+
+	if (inputs.interfaceIn != "")
 	{
-		std::string argv2 = argv[2];
-
-		if (argv2 == "-logonly")
+		if (inputs.interfaceIn.length() < 16)
 		{
-			bool result = ProcessDelay(&delay, argv[1]);
+			std::string ArpOutput = cmd::GetCommandOutput("arp -a");
 
-			if (!result)
+			std::string target = "Interface: " + inputs.interfaceIn;
+
+			std::size_t charPos = ArpOutput.find(target);
+
+			if (charPos == std::string::npos)
 			{
+				std::cout << "Interface " << inputs.interfaceIn << " is an invalid interface." << std::endl;
 				return 0;
 			}
-
-			writeToConsole = 0;
 		}
 		else
 		{
+			std::cout << "Interface " << inputs.interfaceIn << " is an invalid interface." << std::endl;
 			return 0;
 		}
 	}
 	else
 	{
-		PrintDelayError();
+		std::cout << "Interface is blank" << std::endl;
 	}
 
-	Monitor monitor(delay, writeToConsole);
+	Monitor monitor(inputs);
 
 	return 0;
 }
