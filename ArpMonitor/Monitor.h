@@ -3,10 +3,12 @@
 #include "IPAddress.h"
 
 #define DEFAULT_DELAY 5
+#define DEFAULT_LOG_PATH "ArpMonitor.log"
 
 struct userInput
 {
 	std::string interfaceIn = "";
+	std::string logPath = DEFAULT_LOG_PATH;
 	int delay = DEFAULT_DELAY;
 	bool logOnlyFlag = false;
 	bool passiveFlag = false;
@@ -33,8 +35,9 @@ public:
 	int GetVectorCapacity();
 	void SetVectorCapacity(int capacity);
 
-	std::string GetInterface();
+	std::string GetLogPath();
 
+	std::string GetInterface();
 	std::string GetInterfaceInfo(const std::string& ArpOutput);
 
 	bool GetPassiveFlag();
@@ -47,6 +50,7 @@ private:
 	bool m_passiveFlag;
 
 	std::string m_interface;
+	std::string m_logPath;
 
 	std::vector<IPAddressInfo> m_IPAddressArrayA;
 	std::vector<IPAddressInfo> m_IPAddressArrayB;

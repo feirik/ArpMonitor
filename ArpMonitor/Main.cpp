@@ -22,14 +22,10 @@ int main(int argc, char* argv[])
 	CLI::App app("ARP monitor for tracking changes to the ARP cache.");
 
 	app.add_option("-i,--interface", inputs.interfaceIn, "Set specific interface IP address to monitor.");
-
-	int delay = DEFAULT_DELAY;
 	app.add_option("-d,--delay", inputs.delay, "Set delay in seconds between ARP cache checks.");
+	app.add_option("-o,--output", inputs.logPath, "Set output file log path.");
 
-	bool logOnlyFlag = false;
 	app.add_flag("-l,--logonly", inputs.logOnlyFlag, "Only output events to logfile when set.");
-
-	bool passiveFlag = false;
 	app.add_flag("-p,--passive", inputs.passiveFlag, "Passively monitor ARP cache if set. (No DNS lookup)");
 
 	CLI11_PARSE(app, argc, argv);
@@ -66,6 +62,21 @@ int main(int argc, char* argv[])
 			std::cout << "Interface " << inputs.interfaceIn << " is an invalid interface." << std::endl;
 			return 0;
 		}
+	}
+
+	if (inputs.logPath != DEFAULT_LOG_PATH)
+	{
+		std::ofstream outFile;
+
+		outFile.open(inputs.logPath, std::ios_base::app);
+
+		if (!outFile.is_open())
+		{
+			std::cout << "Could not open output file with path " << inputs.logPath << ". Exiting." << std::endl;
+			return 0;
+		}
+
+		outFile.close();
 	}
 
 	Monitor monitor(inputs);

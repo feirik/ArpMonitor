@@ -8,7 +8,7 @@ namespace cmd {
 
 std::string GetCommandOutput(const char* cmd);
 
-std::string GetNetworkName(const IPAddressInfo& address);
+std::string GetNetworkName(const IPAddressInfo& address, const std::string& logPath);
 
 } // Namespace
 

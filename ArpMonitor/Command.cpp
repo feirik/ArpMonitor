@@ -38,7 +38,7 @@ Executes a nslookup command with the provided IP address.
 Output from the command is checked for a DNS name. The name is returned as a string if found.
 If a name is not found, 'Unknown' is returned as a string and an error is logged to file.
 */
-std::string GetNetworkName(const IPAddressInfo& address)
+std::string GetNetworkName(const IPAddressInfo& address, const std::string& logPath)
 {
 	// Running script with a filter for DNS name to avoid cerr output of default nslookup
 	std::string command = "DNSname.bat " + IP::GetIPAddressAsString(address);
@@ -58,7 +58,7 @@ std::string GetNetworkName(const IPAddressInfo& address)
 			std::string log = GetCurrentTimeAsString() + " " + "Unable to resolve DNS name for: " + 
 							  address.MACAddress + " " + IP::GetIPAddressAsString(address);
 
-			LogToFile(log, LOG_PATH);
+			LogToFile(log, logPath);
 		}
 
 		return DNSname;

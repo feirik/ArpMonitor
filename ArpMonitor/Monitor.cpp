@@ -10,7 +10,7 @@
 
 Monitor::Monitor(userInput inputs)
 	: m_delay(inputs.delay), m_writeToConsole(!inputs.logOnlyFlag), m_vectorCapacity(START_CAPACITY),
-	  m_interface(inputs.interfaceIn), m_passiveFlag(inputs.passiveFlag)
+	  m_interface(inputs.interfaceIn), m_passiveFlag(inputs.passiveFlag), m_logPath(inputs.logPath)
 {
 	// Initializing vector capacity to avoid unnecessary vector copies
 	m_IPAddressArrayA.reserve(GetVectorCapacity());
@@ -27,11 +27,11 @@ Monitor::Monitor(userInput inputs)
 		std::cout << startMsg << std::endl;
 	}
 
-	LogToFile(startMsg, LOG_PATH);
+	LogToFile(startMsg, GetLogPath());
 
 	PopulateArpInfo(&m_IPAddressArrayA, ArpOutput);
 
-	LogInitialArpStatus(m_IPAddressArrayA, WriteToConsole(), GetPassiveFlag());
+	LogInitialArpStatus(m_IPAddressArrayA, WriteToConsole(), GetPassiveFlag(), GetLogPath());
 
 	// Main loop, A/B swaps for comparing the arrays
 	while (true)
@@ -69,7 +69,7 @@ Monitor::~Monitor()
 		std::cout << endMsg << std::endl;
 	}
 
-	LogToFile(endMsg, LOG_PATH);
+	LogToFile(endMsg, GetLogPath());
 }
 
 void Monitor::SetDelay(int delay)
@@ -94,7 +94,7 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 	{
 		std::string error = GetCurrentTimeAsString() + " Command line error, ARP output not available.";
 
-		LogToFile(error, LOG_PATH);
+		LogToFile(error, GetLogPath());
 
 		if (WriteToConsole() == true)
 		{
@@ -224,7 +224,7 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 					{
 						std::cout << log << std::endl;
 					}
-					LogToFile(log, LOG_PATH);
+					LogToFile(log, GetLogPath());
 				}
 			}
 		}
@@ -364,9 +364,9 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 			// Multi-IP entry must have elapsed
 			if (Old.at(j).multiIP == true)
 			{
-				std::string log = LogArpEvent("Multi-IP entry elapsed", Old.at(j), GetPassiveFlag());
+				std::string log = LogArpEvent("Multi-IP entry elapsed", Old.at(j), GetPassiveFlag(), GetLogPath());
 
-				LogToFile(log, LOG_PATH);
+				LogToFile(log, GetLogPath());
 
 				if (WriteToConsole() == true)
 				{
@@ -376,9 +376,9 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 			// Regular entry must have elapsed
 			else
 			{
-				std::string log = LogArpEvent("ARP entry elapsed", Old.at(j), GetPassiveFlag());
+				std::string log = LogArpEvent("ARP entry elapsed", Old.at(j), GetPassiveFlag(), GetLogPath());
 
-				LogToFile(log, LOG_PATH);
+				LogToFile(log, GetLogPath());
 
 				if (WriteToConsole() == true)
 				{
@@ -394,9 +394,9 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 		// If new IP and MAC address is found, must be a new entry
 		if (New.at(i).newIP == true && New.at(i).newMAC == true)
 		{
-			std::string log = LogArpEvent("New ARP entry", New.at(i), GetPassiveFlag());
+			std::string log = LogArpEvent("New ARP entry", New.at(i), GetPassiveFlag(), GetLogPath());
 
-			LogToFile(log, LOG_PATH);
+			LogToFile(log, GetLogPath());
 
 			if (WriteToConsole() == true)
 			{
@@ -407,9 +407,9 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 		{
 			if (New.at(i).multiIP)
 			{
-				std::string log = LogArpEvent("New multi-IP ARP entry", New.at(i), GetPassiveFlag());
+				std::string log = LogArpEvent("New multi-IP ARP entry", New.at(i), GetPassiveFlag(), GetLogPath());
 
-				LogToFile(log, LOG_PATH);
+				LogToFile(log, GetLogPath());
 
 				if (WriteToConsole() == true)
 				{
@@ -418,9 +418,9 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 			}
 			else if(New.at(i).newMAC == true)
 			{
-				std::string log = LogArpEvent("New MAC address broadcasting old IP", New.at(i), GetPassiveFlag());
+				std::string log = LogArpEvent("New MAC address broadcasting old IP", New.at(i), GetPassiveFlag(), GetLogPath());
 
-				LogToFile(log, LOG_PATH);
+				LogToFile(log, GetLogPath());
 
 				if (WriteToConsole() == true)
 				{
@@ -429,9 +429,9 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 			}
 			else
 			{
-				std::string log = LogArpEvent("Old MAC address broadcasting new IP", New.at(i), GetPassiveFlag());
+				std::string log = LogArpEvent("Old MAC address broadcasting new IP", New.at(i), GetPassiveFlag(), GetLogPath());
 
-				LogToFile(log, LOG_PATH);
+				LogToFile(log, GetLogPath());
 
 				if (WriteToConsole() == true)
 				{
@@ -504,4 +504,9 @@ std::string Monitor::GetInterfaceInfo(const std::string& ArpOutput)
 
 		return defaultInterface;
 	}	
+}
+
+std::string Monitor::GetLogPath()
+{
+	return m_logPath;
 }
