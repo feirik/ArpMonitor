@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 
 	app.add_option("-i,--interface", inputs.interfaceIn, "Set specific interface IP address to monitor.");
 	app.add_option("-d,--delay", inputs.delay, "Set delay in seconds between ARP cache checks.");
-	app.add_option("-o,--output", inputs.logPath, "Set output file log path.");
+	app.add_option("-o,--output", inputs.logPath, "Set path for logfile.");
 
 	app.add_flag("-l,--logonly", inputs.logOnlyFlag, "Only output events to logfile when set.");
 	app.add_flag("-p,--passive", inputs.passiveFlag, "Passively monitor ARP cache if set. (No DNS lookup)");
