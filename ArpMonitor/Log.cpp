@@ -36,6 +36,7 @@ std::string LogArpEvent(const std::string& description, const IPAddressInfo& ent
 {
 	std::string returnStr;
 
+	// Include DNS lookup check if passive flag is not set
 	if (!passive)
 	{
 		returnStr = GetCurrentTimeAsString() + " " + description + ": " + entry.MACAddress + " "

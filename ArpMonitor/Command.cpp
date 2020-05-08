@@ -55,8 +55,8 @@ std::string GetNetworkName(const IPAddressInfo& address)
 	{
 		if (LOG_DNS_ERROR == true)
 		{
-			std::string log = GetCurrentTimeAsString() + " " + "Unable to resolve DNS name for: " + address.MACAddress + " " +
-				IP::GetIPAddressAsString(address);
+			std::string log = GetCurrentTimeAsString() + " " + "Unable to resolve DNS name for: " + 
+							  address.MACAddress + " " + IP::GetIPAddressAsString(address);
 
 			LogToFile(log, LOG_PATH);
 		}

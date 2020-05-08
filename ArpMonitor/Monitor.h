@@ -17,11 +17,9 @@ class Monitor
 public:
 	//Monitor(int delay, bool logOnly);
 	Monitor(userInput inputs);
-
 	~Monitor();
 
 	void SetDelay(int delay);
-
 	int GetDelay();
 
 	void PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const std::string& ArpOutput);
@@ -33,25 +31,22 @@ public:
 	bool WriteToConsole();
 
 	int GetVectorCapacity();
-
 	void SetVectorCapacity(int capacity);
 
 	std::string GetInterface();
 
-	void PrintSelectedInterface(const std::string& ArpOutput);
+	std::string GetInterfaceInfo(const std::string& ArpOutput);
 
 	bool GetPassiveFlag();
 
 private:
 	int m_delay;
-
-	bool m_writeToConsole;
-
 	int m_vectorCapacity;
 
-	std::string m_interface;
-
+	bool m_writeToConsole;
 	bool m_passiveFlag;
+
+	std::string m_interface;
 
 	std::vector<IPAddressInfo> m_IPAddressArrayA;
 	std::vector<IPAddressInfo> m_IPAddressArrayB;

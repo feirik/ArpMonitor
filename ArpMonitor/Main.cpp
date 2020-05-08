@@ -12,7 +12,7 @@
 
 void PrintDelayError()
 {
-	std::cout << "ERROR. Usage: Enter integer delay " << MIN_DELAY << "-" << MAX_DELAY << " seconds as an agrument." << std::endl;
+	std::cout << "ERROR. Enter integer delay " << MIN_DELAY << "-" << MAX_DELAY << " seconds as an agrument to -d or --delay." << std::endl;
 }
 
 int main(int argc, char* argv[])
@@ -21,7 +21,6 @@ int main(int argc, char* argv[])
 
 	CLI::App app("ARP monitor for tracking changes to the ARP cache.");
 
-	//std::string interfaceIn = "";
 	app.add_option("-i,--interface", inputs.interfaceIn, "Set specific interface IP address to monitor.");
 
 	int delay = DEFAULT_DELAY;
@@ -35,7 +34,7 @@ int main(int argc, char* argv[])
 
 	CLI11_PARSE(app, argc, argv);
 
-	//Checking user input
+	// Checking user delay input, if entered
 	if (inputs.delay != DEFAULT_DELAY)
 	{
 		if (MIN_DELAY > inputs.delay || inputs.delay > MAX_DELAY)
@@ -45,6 +44,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	// Checking user interface input, if entered
 	if (inputs.interfaceIn != "")
 	{
 		if (inputs.interfaceIn.length() < 16)

@@ -16,8 +16,11 @@ Monitor::Monitor(userInput inputs)
 	m_IPAddressArrayA.reserve(GetVectorCapacity());
 	m_IPAddressArrayB.reserve(GetVectorCapacity());
 
-	std::string startMsg = GetCurrentTimeAsString() + " Started ArpMonitor successfully with delay " + 
-						   std::to_string(GetDelay()) + " seconds...";
+	// Getting initial arp -a output to create a comparsion entry and get interface info
+	std::string ArpOutput = cmd::GetCommandOutput("arp -a");
+
+	std::string startMsg = GetCurrentTimeAsString() + " Monitoring the ARP cache on interface " +
+		GetInterfaceInfo(ArpOutput) + " every " + std::to_string(GetDelay()) + " seconds.";
 
 	if (WriteToConsole() == true)
 	{
@@ -25,11 +28,6 @@ Monitor::Monitor(userInput inputs)
 	}
 
 	LogToFile(startMsg, LOG_PATH);
-
-	// Getting initidal arp -a output to create a comparsion entry
-	std::string ArpOutput = cmd::GetCommandOutput("arp -a");
-
-	PrintSelectedInterface(ArpOutput);
 
 	PopulateArpInfo(&m_IPAddressArrayA, ArpOutput);
 
@@ -129,6 +127,7 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 				++IPPos;
 			}
 		}
+		// No interface is provided, search for first 'Type' in ARP output
 		else
 		{
 			// Find last word before IP addresses begin
@@ -137,8 +136,7 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 			IPPos = charPos + target.length();
 		}
 
-		//int IPAddressRow = 0;
-
+		// Clear array ahead of new entries
 		IPAddressArray->clear();
 
 		// Iterate over output starting at IP addresses
@@ -147,6 +145,7 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 			// Find start of IP address
 			if (!isspace(*it))
 			{
+				// End of IP addresses break
 				// If 'Interface' is found after finding 'Type', stop populating as output must show a new adapter
 				if (*it == 'I' && *(it+1) == 'n' && *(it + 2) == 't')
 				{
@@ -469,15 +468,19 @@ bool Monitor::GetPassiveFlag()
 }
 
 /*
-Prints the selected interface if provided as command line argument
-Else prints the first interface in the ARP output
+Returns the active interface as string, takes in a const reference string ARP output as input
+Returns the selected interface if stored in m_interface
+Else prints the first interface listed in the ARP output
 */
-void Monitor::PrintSelectedInterface(const std::string& ArpOutput)
+std::string Monitor::GetInterfaceInfo(const std::string& ArpOutput)
 {
+	// If user has input an interface
 	if (GetInterface() != "")
 	{
-		std::cout << GetCurrentTimeAsString() << " Monitoring interface " << GetInterface() << std::endl;
+		// Return the user input
+		return GetInterface();
 	}
+	// Else search for the first interface listed in the ARP output
 	else
 	{
 		// Search for interface
@@ -499,6 +502,6 @@ void Monitor::PrintSelectedInterface(const std::string& ArpOutput)
 
 		std::string defaultInterface = ArpOutput.substr(ItPos, interfaceLen);
 
-		std::cout << GetCurrentTimeAsString() << " Monitoring interface " << defaultInterface << std::endl;
+		return defaultInterface;
 	}	
 }
