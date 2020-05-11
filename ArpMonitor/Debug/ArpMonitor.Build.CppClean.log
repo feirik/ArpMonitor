@@ -1,10 +1,15 @@
 c:\dev\arpmonitor\arpmonitor\debug\vc141.pdb
 c:\dev\arpmonitor\arpmonitor\debug\vc141.idb
+c:\dev\arpmonitor\arpmonitor\debug\command.obj
+c:\dev\arpmonitor\arpmonitor\debug\math.obj
 c:\dev\arpmonitor\arpmonitor\debug\main.obj
+c:\dev\arpmonitor\arpmonitor\debug\monitor.obj
+c:\dev\arpmonitor\arpmonitor\debug\log.obj
+c:\dev\arpmonitor\arpmonitor\debug\ipaddress.obj
+c:\dev\arpmonitor\arpmonitor\debug\oui.obj
 c:\dev\arpmonitor\output\arpmonitor.exe
 c:\dev\arpmonitor\output\arpmonitor.ilk
 c:\dev\arpmonitor\output\arpmonitor.pdb
-c:\dev\arpmonitor\arpmonitor\debug\monitor.obj
 c:\dev\arpmonitor\arpmonitor\debug\arpmonitor.tlog\cl.command.1.tlog
 c:\dev\arpmonitor\arpmonitor\debug\arpmonitor.tlog\cl.read.1.tlog
 c:\dev\arpmonitor\arpmonitor\debug\arpmonitor.tlog\cl.write.1.tlog

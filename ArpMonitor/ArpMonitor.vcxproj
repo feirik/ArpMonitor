@@ -128,6 +128,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Monitor.cpp" />
+    <ClCompile Include="Oui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Command.h" />
@@ -135,6 +136,7 @@
     <ClInclude Include="Log.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Monitor.h" />
+    <ClInclude Include="Oui.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

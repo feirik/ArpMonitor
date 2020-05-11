@@ -17,7 +17,6 @@ struct userInput
 class Monitor
 {
 public:
-	//Monitor(int delay, bool logOnly);
 	Monitor(userInput inputs);
 	~Monitor();
 

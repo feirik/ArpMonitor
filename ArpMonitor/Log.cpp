@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <chrono>
 #include <ctime>
+#include <string>
 
 /*
 Takes no input
@@ -39,13 +40,15 @@ std::string LogArpEvent(const std::string& description, const IPAddressInfo& ent
 	// Include DNS lookup check if passive flag is not set
 	if (!passive)
 	{
-		returnStr = GetCurrentTimeAsString() + " " + description + ": " + entry.MACAddress + " "
-			+ IP::GetIPAddressAsString(entry) + " " + cmd::GetNetworkName(entry, logPath);
+		returnStr = GetCurrentTimeAsString() + " " + description + ": " + entry.MACAddress + " " + 
+					GetVendor(entry.MACAddress) + " " + IP::GetIPAddressAsString(entry) + " " + 
+			   cmd::GetNetworkName(entry, logPath);
 	}
 	else
 	{
-		returnStr = GetCurrentTimeAsString() + " " + description + ": " + entry.MACAddress + " "
-			+ IP::GetIPAddressAsString(entry);
+		returnStr = GetCurrentTimeAsString() + " " + description + ": " + entry.MACAddress + 
+					GetVendor(entry.MACAddress) + " " + 
+				IP::GetIPAddressAsString(entry);
 	}
 
 	return returnStr;
@@ -89,4 +92,39 @@ void LogInitialArpStatus(const std::vector<IPAddressInfo>& Array, const bool wri
 		}
 		LogToFile(log, logPath);
 	}
+}
+
+/*
+Takes a const string MAC address as input, returns the vendor related to first six 
+*/
+std::string GetVendor(const std::string& MACaddress)
+{
+	// Getting the prefix from the arp -a MAC address output
+	std::string prefix = MACaddress.substr(0, 2) + MACaddress.substr(3, 2) + MACaddress.substr(6, 2);
+
+	// Set chars to uppercase
+	std::transform(prefix.begin(), prefix.end(), prefix.begin(), ::toupper);
+
+	// Create target struct for comparison
+	oui target;
+	target.MACprefix = prefix;
+
+	// Binary search, find location of vendor description
+	auto low = std::lower_bound(ouiArray.begin(), ouiArray.end(), target, oui::less_than());
+
+	std::string result;
+
+	// If location was within array and the prefixes match
+	if (low != ouiArray.end() && low->MACprefix == target.MACprefix)
+	{
+		// Return vendor description
+		result = low->vendor;
+	}
+	else
+	{
+		// Return unknown, prefix not found in OUI array
+		result = "Unknown";
+	}
+	
+	return "(" + result + ")";
 }
