@@ -1,7 +1,2 @@
-﻿  Command.cpp
-  Log.cpp
-  Main.cpp
-  Monitor.cpp
-  Oui.cpp
-  Generating Code...
+﻿  Log.cpp
   ArpMonitor.vcxproj -> C:\Dev\ArpMonitor\Output\ArpMonitor.exe
