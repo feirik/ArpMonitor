@@ -6,6 +6,47 @@ Condensed for ArpMonitor
 
 #include "Oui.h"
 
+#include <algorithm>
+
+namespace oui {
+
+/*
+Takes a const string MAC address as input, returns the vendor related to the OUI as a string if found
+If not found, returns '(Unknown)' as a string
+Uses binary search as the ouiArray is sorted
+*/
+std::string GetVendor(const std::string& MACaddress)
+{
+	// Getting the prefix from the arp -a MAC address output
+	std::string prefix = MACaddress.substr(0, 2) + MACaddress.substr(3, 2) + MACaddress.substr(6, 2);
+
+	// Set chars to uppercase
+	std::transform(prefix.begin(), prefix.end(), prefix.begin(), ::toupper);
+
+	// Create target struct for comparison
+	oui target;
+	target.MACprefix = prefix;
+
+	// Binary search, find location of vendor description
+	auto low = std::lower_bound(ouiArray.begin(), ouiArray.end(), target, oui::less_than());
+
+	std::string result;
+
+	// If location was within array and the prefixes match
+	if (low != ouiArray.end() && low->MACprefix == target.MACprefix)
+	{
+		// Return vendor description
+		result = low->vendor;
+	}
+	else
+	{
+		// Return unknown, prefix not found in OUI array
+		result = "Unknown";
+	}
+
+	return "(" + result + ")";
+}
+
 const std::array<oui, 27948> ouiArray = 
 {{
 { "000000","Xerox" },
@@ -27957,5 +27998,7 @@ const std::array<oui, 27948> ouiArray =
 { "FCFEC2","Invensys Controls UK" },
 { "FCFFAA","IEEE Registration Authority" }
 }};
+
+} // Namespace
 
 

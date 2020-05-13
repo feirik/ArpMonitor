@@ -3,6 +3,8 @@
 #include <string>
 #include <array>
 
+namespace oui {
+
 struct oui
 {
 	std::string MACprefix;
@@ -19,5 +21,9 @@ struct oui
 };
 
 extern const std::array<oui, 27948> ouiArray;
+
+std::string GetVendor(const std::string& MACaddress);
+
+}// Namespace
 
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "IPAddress.h"
-#include "Oui.h"
 
 #include <fstream>
 #include <iostream>
@@ -16,7 +15,5 @@ std::string LogArpEvent(const std::string& description, const IPAddressInfo& ent
 void LogToFile(std::string input, std::string path);
 
 void LogInitialArpStatus(const std::vector<IPAddressInfo>& Array, const bool writeToConsole, const bool passive, const std::string& logPath);
-
-std::string GetVendor(const std::string& MACaddress);
 
 
