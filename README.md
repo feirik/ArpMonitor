@@ -1,6 +1,8 @@
 ### Background
 The purpose of the program is to automatically monitor the ARP cache on Windows 10. This can be useful for learning how the ARP cache works or is affected by ARP attacks such as MAC changers and ARP poisoning.
 
+![Example output](https://github.com/feirik/ArpMonitor/blob/master/Images/ArpMonitor_readme.png)
+
 ### Command line options
 
 #### -i --interface <INTERFACE IP ADDRESS> (optional)
