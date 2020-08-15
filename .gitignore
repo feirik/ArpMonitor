@@ -33,5 +33,6 @@
 
 *.txt
 *.log
+*.vs
 
 !License.txt
