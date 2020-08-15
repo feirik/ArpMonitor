@@ -35,4 +35,6 @@
 *.log
 *.vs
 
+.vs/
+
 !License.txt
