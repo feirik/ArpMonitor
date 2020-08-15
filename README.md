@@ -21,7 +21,7 @@ Disables event output to console.
 Disables any network traffic by the program. The network traffic is used to retrieve the domain name of an ARP entry through nslookup.
 
 ### ARP events
-The program works by comparing a old snapshot of the ARP cache with the present one. The ARP events are divided into the following:
+The program works by comparing an old snapshot of the ARP cache with the present one. The ARP events are divided into the following:
 - Regular ARP entry, new IP address broadcasting on new MAC address
 - Multi-IP ARP entry, multiple IP addresses broadcasting on one MAC address
 - New IP address broadcasting on old MAC address
