@@ -64,7 +64,6 @@ Returns true if match, false if no match
 */
 bool IsSameIP(const IPAddressInfo& Old, const IPAddressInfo& New)
 {
-
 	if (New.a == Old.a && New.b == Old.b && New.c == Old.c && New.d == Old.d)
 	{
 		return true;
