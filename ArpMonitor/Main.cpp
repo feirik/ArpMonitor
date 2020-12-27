@@ -10,6 +10,8 @@
 #define MIN_DELAY 1
 #define MAX_DELAY 30
 
+#define MAX_INTERFACE_LENGTH 15
+
 void PrintDelayError()
 {
 	std::cout << "ERROR. Enter integer delay " << MIN_DELAY << "-" << MAX_DELAY << " seconds as an agrument to -d or --delay." << std::endl;
@@ -43,12 +45,13 @@ int main(int argc, char* argv[])
 	// Checking user interface input, if entered
 	if (inputs.interfaceIn != "")
 	{
-		if (inputs.interfaceIn.length() < 16)
+		if (inputs.interfaceIn.length() <= MAX_INTERFACE_LENGTH)
 		{
 			std::string ArpOutput = cmd::GetCommandOutput("arp -a");
 
 			std::string target = "Interface: " + inputs.interfaceIn;
 
+			// Searching an arp lookup output to check whether interface is valid
 			std::size_t charPos = ArpOutput.find(target);
 
 			if (charPos == std::string::npos)
