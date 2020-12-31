@@ -13,35 +13,35 @@ Returns the integer representing an IP address octet with range 1-256.
 */
 int GetIPOctetAsInt(const char& it0, const char& it1, const char& it2)
 {
+	int result = 0;
+
 	// 3 digit check
 	if (isdigit(it0) && isdigit(it1) && isdigit(it2))
 	{
 		// Converting 3 chars into int
-		int result = (it0 - '0') * 100 + (it1 - '0') * 10 + (it2 - '0');
-
-		return result;
+		result = (it0 - '0') * 100 + (it1 - '0') * 10 + (it2 - '0');
 	}
 	// 2 digit check
 	else if (isdigit(it0) && isdigit(it1))
 	{
 		// Converting 2 chars into int
-		int result = (it0 - '0') * 10 + (it1 - '0');
-
-		return result;
+		result = (it0 - '0') * 10 + (it1 - '0');
 	}
 	// 1 digit check
 	else if (isdigit(it0))
 	{
 		// Converting char into int
-		int result = (it0 - '0');
-
-		return result;
+		result = (it0 - '0');
 	}
 
-	return 0;
+	return result;
 }
 
-int GetNumberOfOctetDigits(int octet)
+/*
+Input of a const int octet
+Returns the number of digits in the octet
+*/
+int GetNumberOfOctetDigits(const int octet)
 {
 	if (octet > 99)
 	{

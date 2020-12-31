@@ -15,9 +15,9 @@ Returns a time stamp [Day Mon dd hh:mm:ss yyyy] as a string
 */
 std::string GetCurrentTimeAsString()
 {
-	auto now = std::chrono::system_clock::now();
+	const auto now = std::chrono::system_clock::now();
 
-	std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+	const std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
 
 	std::string result = std::ctime(&currentTime);
 
@@ -60,7 +60,7 @@ Input of a string input and a string path
 If file opens successfully, write input string to file.
 Else output an error.
 */
-void LogToFile(std::string input, std::string path)
+void LogToFile(const std::string& input, const std::string& path)
 {
 	std::ofstream outFile;
 
@@ -81,11 +81,14 @@ Logs the IP address, MAC address and domain name for the IPAddressInfo entries i
 Prints the same info if flag is set to true
 No return
 */
-void LogInitialArpStatus(const std::vector<IPAddressInfo>& Array, const bool writeToConsole, const bool passive, const std::string& logPath)
+void LogInitialArpStatus(const std::vector<IPAddressInfo>& Array, 
+						 const bool writeToConsole, 
+						 const bool passive, 
+						 const std::string& logPath)
 {
 	for (size_t i = 0; i < Array.size(); ++i)
 	{
-		std::string log = LogArpEvent("ARP entry at startup", Array.at(i), passive, logPath);
+		const std::string log = LogArpEvent("ARP entry at startup", Array.at(i), passive, logPath);
 
 		if (writeToConsole == true)
 		{

@@ -7,14 +7,14 @@
 
 #include <sstream>
 
-#define MIN_DELAY 1
-#define MAX_DELAY 30
+#define MIN_DELAY_IN_SECONDS 1
+#define MAX_DELAY_IN_SECONDS 30
 
 #define MAX_INTERFACE_LENGTH 15
 
 void PrintDelayError()
 {
-	std::cout << "ERROR. Enter integer delay " << MIN_DELAY << "-" << MAX_DELAY << " seconds as an agrument to -d or --delay." << std::endl;
+	std::cout << "ERROR. Enter integer delay " << MIN_DELAY_IN_SECONDS << "-" << MAX_DELAY_IN_SECONDS << " seconds as an agrument to -d or --delay." << std::endl;
 }
 
 int main(int argc, char* argv[])
@@ -33,9 +33,9 @@ int main(int argc, char* argv[])
 	CLI11_PARSE(app, argc, argv);
 
 	// Checking user delay input, if entered
-	if (inputs.delay != DEFAULT_DELAY)
+	if (inputs.delay != DEFAULT_DELAY_IN_SECONDS)
 	{
-		if (MIN_DELAY > inputs.delay || inputs.delay > MAX_DELAY)
+		if (MIN_DELAY_IN_SECONDS > inputs.delay || inputs.delay > MAX_DELAY_IN_SECONDS)
 		{
 			PrintDelayError();
 			return 0;
@@ -47,12 +47,12 @@ int main(int argc, char* argv[])
 	{
 		if (inputs.interfaceIn.length() <= MAX_INTERFACE_LENGTH)
 		{
-			std::string ArpOutput = cmd::GetCommandOutput("arp -a");
+			const std::string ArpOutput = cmd::GetCommandOutput("arp -a");
 
-			std::string target = "Interface: " + inputs.interfaceIn;
+			const std::string target = "Interface: " + inputs.interfaceIn;
 
 			// Searching an arp lookup output to check whether interface is valid
-			std::size_t charPos = ArpOutput.find(target);
+			const std::size_t charPos = ArpOutput.find(target);
 
 			if (charPos == std::string::npos)
 			{

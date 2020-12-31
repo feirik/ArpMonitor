@@ -41,7 +41,7 @@ If a name is not found, 'Unknown' is returned as a string and an error is logged
 std::string GetNetworkName(const IPAddressInfo& address, const std::string& logPath)
 {
 	// Running script with a filter for DNS name to avoid cerr output of default nslookup
-	std::string command = "DNSname.bat " + IP::GetIPAddressAsString(address);
+	const std::string command = "DNSname.bat " + IP::GetIPAddressAsString(address);
 	std::string DNSname = GetCommandOutput(command.c_str());
 
 	// Stripping new line '\n' char at end of string
@@ -55,9 +55,7 @@ std::string GetNetworkName(const IPAddressInfo& address, const std::string& logP
 	{
 		if (LOG_DNS_ERROR == true)
 		{
-			std::string log = GetCurrentTimeAsString() + " " + "Unable to resolve DNS name for: " + 
-							  address.MACAddress + " " + IP::GetIPAddressAsString(address);
-
+			const std::string log = GetCurrentTimeAsString() + " " + "Unable to resolve DNS name for: "					    + address.MACAddress + " " + IP::GetIPAddressAsString(address);
 			LogToFile(log, logPath);
 		}
 

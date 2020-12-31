@@ -12,7 +12,7 @@ std::string GetCurrentTimeAsString();
 
 std::string LogArpEvent(const std::string& description, const IPAddressInfo& entry, const bool passive, const std::string& logPath);
 
-void LogToFile(std::string input, std::string path);
+void LogToFile(const std::string& input, const std::string& path);
 
 void LogInitialArpStatus(const std::vector<IPAddressInfo>& Array, const bool writeToConsole, const bool passive, const std::string& logPath);
 

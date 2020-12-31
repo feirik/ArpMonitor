@@ -17,12 +17,12 @@ Monitor::Monitor(userInput inputs)
 	m_IPAddressArrayB.reserve(GetVectorCapacity());
 
 	// Getting initial arp -a output to create a comparsion entry and get interface info
-	std::string ArpOutput = cmd::GetCommandOutput("arp -a");
+	const std::string ArpOutput = cmd::GetCommandOutput("arp -a");
 
-	std::string startMsg = GetCurrentTimeAsString() + " Monitoring the ARP cache on interface " +
+	const std::string startMsg = GetCurrentTimeAsString() + " Monitoring the ARP cache on interface " +
 		GetInterfaceInfo(ArpOutput) + " every " + std::to_string(GetDelay()) + " seconds.";
 
-	if (WriteToConsole() == true)
+	if (GetWriteToConsole() == true)
 	{
 		std::cout << startMsg << std::endl;
 	}
@@ -31,7 +31,7 @@ Monitor::Monitor(userInput inputs)
 
 	PopulateArpInfo(&m_IPAddressArrayA, ArpOutput);
 
-	LogInitialArpStatus(m_IPAddressArrayA, WriteToConsole(), GetPassiveFlag(), GetLogPath());
+	LogInitialArpStatus(m_IPAddressArrayA, GetWriteToConsole(), GetPassiveFlag(), GetLogPath());
 
 	// Main loop, A/B swaps for comparing the arrays
 	while (true)
@@ -62,9 +62,9 @@ Monitor::Monitor(userInput inputs)
 
 Monitor::~Monitor()
 {
-	std::string endMsg = GetCurrentTimeAsString() + " Shut down ArpMonitor.";
+	const std::string endMsg = GetCurrentTimeAsString() + " Shut down ArpMonitor.";
 
-	if (WriteToConsole() == true)
+	if (GetWriteToConsole() == true)
 	{
 		std::cout << endMsg << std::endl;
 	}
@@ -77,7 +77,7 @@ void Monitor::SetDelay(int delay)
 	m_delay = delay;
 }
 
-int Monitor::GetDelay()
+int Monitor::GetDelay() const
 {
 	return m_delay;
 }
@@ -92,11 +92,11 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 {
 	if (ArpOutput.substr(0, 7).find("No ARP") != std::string::npos)
 	{
-		std::string error = GetCurrentTimeAsString() + " Command line error, ARP output not available.";
+		const std::string error = GetCurrentTimeAsString() + " Command line error, ARP output not available.";
 
 		LogToFile(error, GetLogPath());
 
-		if (WriteToConsole() == true)
+		if (GetWriteToConsole() == true)
 		{
 			std::cout << error << std::endl;
 		}
@@ -164,9 +164,15 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 					{
 						switch (i)
 						{
-						case 0: newEntry.a = octet; break;
-						case 1: newEntry.b = octet; break;
-						case 2: newEntry.c = octet; break;
+						case 0: 
+							newEntry.a = octet; 
+							break;
+						case 1: 
+							newEntry.b = octet; 
+							break;
+						case 2: 
+							newEntry.c = octet; 
+							break;
 						default:
 							break;
 						}
@@ -218,9 +224,9 @@ void Monitor::PopulateArpInfo(std::vector<IPAddressInfo>* IPAddressArray, const 
 				// Output error if memory allocation fails
 				catch (const std::bad_alloc&)
 				{
-					std::string log = GetCurrentTimeAsString() + "FATAL ERROR. Unable to allocate enough memory.";
+					const std::string log = GetCurrentTimeAsString() + "FATAL ERROR. Unable to allocate enough memory.";
 
-					if (WriteToConsole() == true)
+					if (GetWriteToConsole() == true)
 					{
 						std::cout << log << std::endl;
 					}
@@ -239,8 +245,8 @@ No output
 */
 void Monitor::CompareIPAddressArrays(std::vector<IPAddressInfo>* Old, std::vector<IPAddressInfo>* New)
 {
-	size_t newSize = New->size();
-	size_t oldSize = Old->size();
+	const size_t newSize = New->size();
+	const size_t oldSize = Old->size();
 
 	// Reset flags from previous comparison
 	for (size_t j = 0; j < oldSize; ++j)
@@ -368,7 +374,7 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 
 				LogToFile(log, GetLogPath());
 
-				if (WriteToConsole() == true)
+				if (GetWriteToConsole() == true)
 				{
 					std::cout << log << std::endl;
 				}
@@ -380,7 +386,7 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 
 				LogToFile(log, GetLogPath());
 
-				if (WriteToConsole() == true)
+				if (GetWriteToConsole() == true)
 				{
 					std::cout << log << std::endl;
 				}
@@ -398,7 +404,7 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 
 			LogToFile(log, GetLogPath());
 
-			if (WriteToConsole() == true)
+			if (GetWriteToConsole() == true)
 			{
 				std::cout << log << std::endl;
 			}
@@ -411,7 +417,7 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 
 				LogToFile(log, GetLogPath());
 
-				if (WriteToConsole() == true)
+				if (GetWriteToConsole() == true)
 				{
 					std::cout << log << std::endl;
 				}
@@ -422,7 +428,7 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 
 				LogToFile(log, GetLogPath());
 
-				if (WriteToConsole() == true)
+				if (GetWriteToConsole() == true)
 				{
 					std::cout << log << std::endl;
 				}
@@ -433,7 +439,7 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 
 				LogToFile(log, GetLogPath());
 
-				if (WriteToConsole() == true)
+				if (GetWriteToConsole() == true)
 				{
 					std::cout << log << std::endl;
 				}
@@ -442,27 +448,27 @@ void Monitor::LogArpEvents(const std::vector<IPAddressInfo>& Old, const std::vec
 	}
 }
 
-bool Monitor::WriteToConsole()
+bool Monitor::GetWriteToConsole() const
 {
 	return m_writeToConsole;
 }
 
-int Monitor::GetVectorCapacity()
+int Monitor::GetVectorCapacity() const
 {
 	return m_vectorCapacity;
 }
 
-void Monitor::SetVectorCapacity(int capacity)
+void Monitor::SetVectorCapacity(const int capacity)
 {
 	m_vectorCapacity = capacity;
 }
 
-std::string Monitor::GetInterface()
+std::string Monitor::GetInterface() const
 {
 	return m_interface;
 }
 
-bool Monitor::GetPassiveFlag()
+bool Monitor::GetPassiveFlag() const
 {
 	return m_passiveFlag;
 }
@@ -484,9 +490,9 @@ std::string Monitor::GetInterfaceInfo(const std::string& ArpOutput)
 	else
 	{
 		// Search for interface
-		std::string target = "Interface: ";
-		std::size_t charPos = ArpOutput.find(target);
-		std::size_t ItPos = charPos + target.length();
+		const std::string target = "Interface: ";
+		const std::size_t charPos = ArpOutput.find(target);
+		const std::size_t ItPos = charPos + target.length();
 
 		std::size_t interfaceLen = 0;
 
@@ -506,7 +512,7 @@ std::string Monitor::GetInterfaceInfo(const std::string& ArpOutput)
 	}	
 }
 
-std::string Monitor::GetLogPath()
+std::string Monitor::GetLogPath() const
 {
 	return m_logPath;
 }
