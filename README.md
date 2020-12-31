@@ -5,13 +5,13 @@ The purpose of the program is to automatically monitor the ARP cache on Windows 
 
 ### Command line options
 
-#### -i --interface <INTERFACE IP ADDRESS> (optional)
+#### -i --interface {INTERFACE IP ADDRESS} (optional)
 Selects an interface in the arp -a output for the program to monitor
 
-#### -d --delay <NUMBER> (optional)
+#### -d --delay {NUMBER} (optional)
 Sets the delay in seconds between monitoring cycles for the program. Default delay is 5 seconds if not specified.
 
-#### -o --output <FILEPATH> (optional)
+#### -o --output {FILEPATH} (optional)
 Filepath of the output log file. Default filepath is in the directory of the .exe.
 
 #### -l --logonly (optional flag)
